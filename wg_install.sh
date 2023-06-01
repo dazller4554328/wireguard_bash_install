@@ -16,6 +16,13 @@ fi
 
 # Install WireGuard
 write_log "Starting WireGuard installation..."
+# Remove any existing wg0 interface
+if ip link show wg0 > /dev/null 2>&1; then
+    write_log "Removing existing wg0 interface..."
+    wg-quick down wg0 >> "$LOGFILE" 2>&1 || write_log "ERROR: Failed to bring down wg0 interface."
+    ip link del dev wg0 >> "$LOGFILE" 2>&1 || write_log "ERROR: Failed to delete wg0 interface."
+fi
+
 apt-get update -y >> "$LOGFILE" 2>&1 || write_log "ERROR: Failed to update package list."
 apt-get install -y wireguard >> "$LOGFILE" 2>&1 || write_log "ERROR: WireGuard installation failed."
 
